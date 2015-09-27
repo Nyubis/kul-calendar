@@ -5,11 +5,14 @@
 		<title>KUL Calendar</title>
 	</head>
 	<body>
-		{% for entry in data %}
-		<div class="entry">
-			<strong>{{ entry.day }}</strong>
+		{% for day in days %}
+		<div class="day">
+			<h3>{{ day.name }}</h3>
+			{% for entry in day.entries %}
 			<span class="name">{{ entry.name }}</span>
-			<span class="sub">{{ entry.timespan }} {{ entry.room }} {{ entry.teachers }}</span>
+			<span class="time">{{ entry.timespan }}</span>
+			<div class="sub">{{ entry.room }} {{ entry.teachers }}</div>
+			{% endfor %}
 		</div>
 		{% endfor %}
 	</body>

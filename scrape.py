@@ -8,6 +8,7 @@ hidden_re = re.compile('<input type="hidden" name="([^"]+)" value="([^"]+)">')
 font_re   = re.compile("<font[^>]+>([^<]+)</font>", re.IGNORECASE)
 space_re  = re.compile("\r\n +(&nbsp;)?")
 txt_re    = re.compile('<td.+?class="txt".+?>(.+?)</td>', re.DOTALL) # the dotall is there so that it can capture \r\n
+anchor_re = re.compile("</?a[^>]*>", re.IGNORECASE)
 
 def scrape(coursecode, date=datetime.now()):
     # start the request chain for the timetable of the given course
@@ -37,8 +38,13 @@ def extract_data(html):
     clean_days = list(map(lambda x: space_re.sub(" ", x.strip()), raw_days))
     # the other data is in td tags with class="txt"
     raw_data = txt_re.findall(html)
-    clean_data = list(map(lambda x: x.replace("<!--          </FONT> -->", "").replace("&nbsp;", "").strip(), raw_data))
+    clean_data = list(map(clean, raw_data))
     return clean_days, clean_data
+
+def clean(text):
+    second = text.replace("<!--          </FONT> -->", "").replace("&nbsp;", "").strip()
+    return anchor_re.sub("", second)
+
 
 def assemble(days, data):
     result = []
