@@ -25,7 +25,8 @@ def scrape(coursecode, date=datetime.now()):
     uaparams={"browser": "", "version": "", "platform": "", "objid": "00000000", "otype": "", "OnInputProcessing(verder)": ""}
     fourth = requests.post(third.url, params=uaparams, cookies=third.cookies)
     # this one contains the actual data in a somewhat legible format, so we extract it with even more regexes
-    extract_data(fourth.text)
+    days, data = extract_data(fourth.text)
+    print(assemble(days, data))
 
 def extract_data(html):
     # the date is in between font tags with a whole lot of whitespace crap around it
@@ -36,5 +37,19 @@ def extract_data(html):
     raw_data = txt_re.findall(html)
     clean_data = list(map(lambda x: x.replace("<!--          </FONT> -->", "").replace("&nbsp;", "").strip(), raw_data))
     print(clean_data)
-    
+    return clean_days, clean_data
+
+def assemble(days, data):
+    result = []
+    for i, day in enumerate(days):
+        entry = {}
+        offset = i * 6
+        entry["day"] = day
+        entry["timespan"] = data[1 + offset]
+        entry["room"]     = data[2 + offset]
+        entry["course"]   = data[3 + offset]
+        entry["name"]     = data[4 + offset]
+        entry["teachers"] = data[5 + offset]
+        result.append(entry)
+    return result
 
