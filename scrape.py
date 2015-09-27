@@ -10,13 +10,13 @@ space_re  = re.compile("\r\n +(&nbsp;)?")
 txt_re    = re.compile('<td.+?class="txt".+?>(.+?)</td>', re.DOTALL) # the dotall is there so that it can capture \r\n
 anchor_re = re.compile("</?a[^>]*>", re.IGNORECASE)
 
-def scrape(coursecode, date=datetime.now()):
+def scrape(coursecode, date=datetime.now().strftime("%d.%m.%Y")):
     # start the request chain for the timetable of the given course
     first = requests.get(course_url_template.format(coursecode))
     # we get redirected to a page where js is used to submit a form full of hidden fields.
     # we extract the fields with a regex, change the date to the provided one, and submit the form manually
     fparams = dict(hidden_re.findall(first.text))
-    fparams['nieuwedatum'] = date.strftime("%d.%m.%Y")
+    fparams['nieuwedatum'] = date
     second = requests.post(first.url, params=fparams, cookies=first.cookies)
     # we're on the standard timetable page now, but the data is displayed in a table that's a nightmare to scrape
     # so we post another form that will redirect us and give us the same data in a slightly saner format

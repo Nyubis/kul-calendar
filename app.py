@@ -1,5 +1,6 @@
 import scrape
-from flask import Flask, render_template
+import re
+from flask import Flask, render_template, request
 from datetime import datetime, timedelta
 app = Flask(__name__)
 
@@ -12,7 +13,12 @@ def lookup(coursestring):
     courses = coursestring.split("+")
     entries_by_day = {}
     for course in courses:
-        coursedata = scrape.scrape(course)
+        # check whether the user provided a valid day, otherwise use today
+        day_param = request.args.get('day')
+        if day_param is not None and verify_date_param(day_param):
+            coursedata = scrape.scrape(course, day_param)
+        else:
+            coursedata = scrape.scrape(course)
         # this data is from one particular course
         # we take the individual moments and put them in the dict, separated by day
         bucketadd(entries_by_day, "day", coursedata)
@@ -54,5 +60,10 @@ def getWeekIndex(name):
     # if we can't find where it belongs, just put it at the end I guess?
     return 7
 
+# verify that the url argument is a date in the format that SAP expects, e.g. 27.09.2015
+def verify_date_param(datestring):
+    date_re = re.compile("\d\d\.\d\d\.\d\d\d\d")
+    return date_re.match(datestring) is not None
+
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=True)
