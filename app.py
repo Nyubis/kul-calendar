@@ -1,4 +1,4 @@
-import scrape
+import scraper
 import re
 from flask import Flask, render_template, request
 from datetime import datetime, timedelta
@@ -16,9 +16,9 @@ def lookup(coursestring):
         # check whether the user provided a valid day, otherwise use today
         day_param = request.args.get('day')
         if day_param is not None and verify_date_param(day_param):
-            coursedata = scrape.scrape(course, day_param)
+            coursedata = scraper.scrape(course, day_param)
         else:
-            coursedata = scrape.scrape(course)
+            coursedata = scraper.scrape(course)
         # this data is from one particular course
         # we take the individual moments and put them in the dict, separated by day
         bucketadd(entries_by_day, "day", coursedata)
