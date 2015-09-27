@@ -13,17 +13,21 @@ def lookup(coursestring):
     entries_by_day = {}
     for course in courses:
         coursedata = scrape.scrape(course)
+        # this data is from one particular course
+        # we take the individual moments and put them in the dict, separated by day
         bucketadd(entries_by_day, "day", coursedata)
-    
-    weekdays_with_courses = []
+
+    # this will end up containing Weekday objects, which also contain the courses for that day
+    weekdays_with_courses = [] 
     for date, entries in entries_by_day.items():
         weekdays_with_courses.append(Weekday(date, entries))
-    
+
+    # sort the Weekdays based on their weekindex, so monday comes first and sunday last
     sorted_data = sorted(weekdays_with_courses, key=lambda x: x.weekindex)
     print(sorted_data)
     return render_template("lookup.html", days=sorted_data)
 
-# Used to reformat the datastructures on a per-course basis to a per-day basis
+# Used to reformat the datastructures from a per-course basis to a per-day basis
 def bucketadd(dictionary, key, entries):
     for entry in entries:
         if entry[key] in dictionary:
@@ -41,6 +45,7 @@ class Weekday:
     def addentry(self, entry):
         self.entries.append(entry)
 
+# turn something like "Wednesday 30 September 2015" into 2 (the index of wednesday in a week)
 def getWeekIndex(name):
     weekdays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
     for i, day in enumerate(weekdays):
