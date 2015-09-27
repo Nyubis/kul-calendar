@@ -26,17 +26,18 @@ def scrape(coursecode, date=datetime.now()):
     fourth = requests.post(third.url, params=uaparams, cookies=third.cookies)
     # this one contains the actual data in a somewhat legible format, so we extract it with even more regexes
     days, data = extract_data(fourth.text)
-    print(assemble(days, data))
+    #then we turn that data into a dictionary for passing around the rest of the application
+    assembled = assemble(days, data)
+    print(assembled)
+    return assembled
 
 def extract_data(html):
     # the date is in between font tags with a whole lot of whitespace crap around it
     raw_days = font_re.findall(html)
     clean_days = list(map(lambda x: space_re.sub(" ", x.strip()), raw_days))
-    print(clean_days)
     # the other data is in td tags with class="txt"
     raw_data = txt_re.findall(html)
     clean_data = list(map(lambda x: x.replace("<!--          </FONT> -->", "").replace("&nbsp;", "").strip(), raw_data))
-    print(clean_data)
     return clean_days, clean_data
 
 def assemble(days, data):

@@ -1,0 +1,16 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>KUL Calendar</title>
+	</head>
+	<body>
+		{% for entry in data %}
+		<div class="entry">
+			<strong>{{ entry.day }}</strong>
+			<span class="name">{{ entry.name }}</span>
+			<span class="sub">{{ entry.timespan }} {{ entry.room }} {{ entry.teachers }}</span>
+		</div>
+		{% endfor %}
+	</body>
+</html>
